@@ -1,27 +1,43 @@
-import React from 'react';
+import * as React from 'react';
+import { Button as MuiButton } from '@mui/material';
 import PropTypes from 'prop-types';
-import styles from './ContactList.module.css';
+import {
+  ContactContainer as Container,
+  ContactEl as Item,
+} from './ContactList.styled';
 
 export const ContactList = ({ contacts, onDeleteContact }) => {
+  const handleDeleteClick = id => {
+    onDeleteContact(id);
+  };
+
+  const handleDeleteKeyPress = (event, id) => {
+    if (event.key === 'Enter') {
+      onDeleteContact(id);
+    }
+  };
+
   return (
-    <div className={styles.contactContainer}>
-      {contacts.map(({ id, name, phone, createdAt }) => (
-        <div className={styles.contactEl} key={id}>
-          <button
-            className={styles.contactBtn}
+    <Container>
+      {contacts.map(({ id, name, number }) => (
+        <Item key={id}>
+          <React.Fragment>
+            <span>{name}: </span>
+            <span>{number}</span>
+          </React.Fragment>
+          <MuiButton
+            variant="contained"
+            size="small"
             type="button"
-            onClick={() => onDeleteContact(id)}
+            onClick={() => handleDeleteClick(id)}
+            onKeyPress={event => handleDeleteKeyPress(event, id)}
+            aria-label="Delete"
           >
             Delete
-          </button>
-          <span className={styles.contactPhone}>{phone} :</span>
-          <span className={styles.contactName}>{name}, </span>
-          <span className={styles.contactCreatedAt}>
-            Created at: {new Date(createdAt).toLocaleString()}
-          </span>
-        </div>
+          </MuiButton>
+        </Item>
       ))}
-    </div>
+    </Container>
   );
 };
 

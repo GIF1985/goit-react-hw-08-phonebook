@@ -1,15 +1,15 @@
+import Button from '@mui/material/Button';
 import { useState } from 'react';
-import styles from './Form.module.css';
+import { ContainerForm, ContaierField, FieldItem } from './Form.styled';
 
 export function Form({ onData }) {
   const initialState = {
     name: '',
-    phone: '',
+    number: '',
   };
 
   const [state, setState] = useState({ ...initialState });
-  const { name, phone } = state;
-  const [errors, setErrors] = useState({ name: '', phone: '' });
+  const { name, number } = state;
 
   const handleChange = ({ target }) => {
     const { name, value } = target;
@@ -17,82 +17,54 @@ export function Form({ onData }) {
       ...prevState,
       [name]: value,
     }));
-
-    setErrors(prevErrors => ({
-      ...prevErrors,
-      [name]: '',
-    }));
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    let hasErrors = false;
-    const newErrors = { name: '', phone: '' };
-
-    if (!name) {
-      newErrors.name = 'Please enter a name';
-      hasErrors = true;
-    } else if (name.length < 2) {
-      newErrors.name = 'Name must contain at least 2 letters';
-      hasErrors = true;
-    }
-
-    if (!phone) {
-      newErrors.phone = 'Please enter a phone number';
-      hasErrors = true;
-    } else if (!/^\d+$/.test(phone)) {
-      newErrors.phone = 'Phone number should only contain digits';
-      hasErrors = true;
-    }
-
-    if (hasErrors) {
-      setErrors(newErrors);
-      return;
-    }
-
     onData({ ...state });
     setState({ ...initialState });
   };
 
   return (
-    <form className={styles.containerForm} onSubmit={handleSubmit}>
-      <div className={styles.containerField}>
-        Phone number
-        <input
-          className={styles.fieldItem}
-          type="tel"
-          name="phone"
-          value={phone}
-          pattern="^\+?\d{1,4}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          placeholder="Enter number"
-          onChange={handleChange}
-        />
-        {errors.phone && <p className={styles.error}>{errors.phone}</p>}
-      </div>
-      <div className={styles.containerField}>
+    <ContainerForm onSubmit={handleSubmit}>
+      <ContaierField>
         Name
-        <input
-          className={styles.fieldItem}
+        <FieldItem
           type="text"
           name="name"
           value={name}
-          pattern="^[a-zA-Zа-яА-Я]{2,}([' -][a-zA-Zа-яА-Я]+)*$"
-          title="Name must contain at least 2 letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          pattern="^[a-zA-Zа-яА-Я]{2,}$"
+          title="Name must contain at least 2 letters"
           required
           placeholder="Enter name"
           onChange={handleChange}
+          aria-label="Enter name"
+          autocomplete="off"
         />
-        {errors.name && <p className={styles.error}>{errors.name}</p>}
-      </div>
-      <button
-        className={styles.btnDisabled}
+      </ContaierField>
+      <ContaierField>
+        Phone number
+        <FieldItem
+          type="text"
+          name="number"
+          value={number}
+          pattern="[0-9]*"
+          title="Phone number must contain only digits"
+          required
+          placeholder="Enter number"
+          onChange={handleChange}
+          aria-label="Enter phone number"
+          autocomplete="off"
+        />
+      </ContaierField>
+      <Button
+        variant="contained"
+        size="small"
         type="submit"
-        disabled={!name || !phone}
+        disabled={!name || !number}
       >
         Add contact
-      </button>
-    </form>
+      </Button>
+    </ContainerForm>
   );
 }
